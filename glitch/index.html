@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Glitch example</title>
+  <script>
+  document.addEventListener('DOMContentLoaded', function(e) {
+    var image = new Image()
+      , button = document.getElementById('glitch');
+    
+    button.addEventListener('click', function(e) {
+      var canvas = document.getElementById('src')
+        , ctx = canvas.getContext('2d')
+        , dest = document.getElementById('dest')
+        , prefix = 'data:image/jpeg;base64,'
+        , data = canvas.toDataURL('image/jpeg').slice(prefix.length)
+        , bin = window.atob(data).split('');
+      
+      for (var i = 300; i < bin.length; i += Math.round(Math.random() * 10000)) {
+      	bin[i] = '?';
+      }
+      dest.src = prefix + window.btoa(bin.join(''));
+    });
+    
+    image.addEventListener('load', function(e) {
+      var canvas = document.getElementById('src')
+        , ctx = canvas.getContext('2d')
+        , dest = document.getElementById('dest');
+      canvas.width = this.width;
+      canvas.height = this.height;
+      ctx.drawImage(this, 0, 0, this.width, this.height);
+      // dest.src = canvas.toDataURL();
+    });
+    image.src = './lenna.jpg';
+  });
+  </script>
+</head>
+<body>
+  <div style="float: left;"><canvas id="src"></canvas></div>
+  <div style="float: left; margin: 10px"><button id="glitch">Glitch</button></div>
+  <div><img id="dest" src="data:,"></div>
+</body>
+</html>
