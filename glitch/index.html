@@ -29,13 +29,14 @@
       canvas.width = this.width;
       canvas.height = this.height;
       ctx.drawImage(this, 0, 0, this.width, this.height);
-      // dest.src = canvas.toDataURL();
+      dest.src = canvas.toDataURL();
     });
     image.src = './lenna.jpg';
   });
   </script>
 </head>
 <body>
+  <h1>Glitch example</h1>
   <div style="float: left;"><canvas id="src"></canvas></div>
   <div style="float: left; margin: 10px"><button id="glitch">Glitch</button></div>
   <div><img id="dest" src="data:,"></div>
