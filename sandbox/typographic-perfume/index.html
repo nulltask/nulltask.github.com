@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <style>
   body {
-		font-family: 'Hiragino Mincho Pro';
+    font-family: 'Hiragino Mincho Pro';
     color: white;
     background-color: black;
     overflow: hidden;
@@ -12,11 +12,34 @@
   .particle {
     position: absolute;
     color: rgba(255, 255, 255, .5);
-	  -webkit-transform: scale(0.5);
+    -webkit-transform: scale(0.5);
   }
   .render {
     width: 100%;
     height: 100%;
+  }
+  .caption {
+    font-family: 'Helvetica Neue';
+    color: white;
+    z-index: 100;
+    position: absolute;
+    bottom: 1em;
+    right: 2em;
+    line-height: 1.5em;
+  }
+  .caption small {
+    font-size: 0.7em;
+    display: block;
+  }
+  .caption big {
+    font-size: 1.5em;
+    font-weight: 100;
+    display: block;
+    margin-bottom: 0.5em;
+  }
+  a, a:visited {
+    color: yellow;
+    text-decoration: none;
   }
   </style>
   <script src="https://raw.github.com/mrdoob/three.js/r48/build/Three.js"></script>
@@ -31,14 +54,13 @@
 <script>
 $(function() {
   var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000)
-    , scene = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000)
+    , scene = new THREE.Scene()
     , renderer = new THREE.DOMRenderer()
     , mouseX = 0
     , mouseY = 0
     , windowHalfX = window.innerWidth / 2
     , windowHalfY = window.innerHeight / 2
-    , now = +(new Date());  
-
+    , now = +(new Date());
 
   /**
    * Setup camera and renderer.
@@ -130,4 +152,8 @@ $(function() {
 });
 </script>
 </body>
+  <p class="caption">
+    <big>Typographic Perfume</big>
+    <small>Click to move camera.</small>
+    <small>Heavily referenced <a href="http://mohayonao.hatenablog.com/entry/2012/04/03/231110" target="_blank">mohayonao's implementation</a>.</small></p>
 </html>
