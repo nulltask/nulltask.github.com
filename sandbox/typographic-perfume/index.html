@@ -1,0 +1,133 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+  body {
+		font-family: 'Hiragino Mincho Pro';
+    color: white;
+    background-color: black;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    color: rgba(255, 255, 255, .5);
+	  -webkit-transform: scale(0.5);
+  }
+  .render {
+    width: 100%;
+    height: 100%;
+  }
+  </style>
+  <script src="https://raw.github.com/mrdoob/three.js/r48/build/Three.js"></script>
+  <!-- script src="https://raw.github.com/ajorkowski/DOMRendererExtensions/master/DOMRenderer.js"></script -->
+  <script src="https://raw.github.com/sole/tween.js/r6/build/Tween.js"></script>
+  <script src="Three.flashlike.js"></script>
+  <script src="bvh.js"></script>
+  <script src="motionman.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+</head>
+<body>
+<script>
+$(function() {
+  var camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000)
+    , scene = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 10000)
+    , renderer = new THREE.DOMRenderer()
+    , mouseX = 0
+    , mouseY = 0
+    , windowHalfX = window.innerWidth / 2
+    , windowHalfY = window.innerHeight / 2
+    , now = +(new Date());  
+
+
+  /**
+   * Setup camera and renderer.
+   */
+
+  scene.add(camera);
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  camera.position.z = 300;
+
+  /**
+   * Expose MotionMan.
+   */
+  
+  window.A = new MotionMan({ name:"aachan", char: "あーちゃん" });
+  window.K = new MotionMan({ name:"kashiyuka", char: "かしゆか" });
+  window.N = new MotionMan({ name:"nocchi", char: "のっち" });
+  
+  /**
+   * Loading BVH.
+   */ 
+
+  A.load("data/spring-of-life-01.bvh", function(msg) {
+    if (msg !== "buildend") return;
+    scene.add(A);
+    K.load("data/spring-of-life-02.bvh", function(msg) {
+      if (msg !== "buildend") return;
+      scene.add(K);
+      N.load("data/spring-of-life-03.bvh", function(msg) {
+        if (msg !== "buildend") return;
+        scene.add(N);
+      });
+    });
+  });
+  
+  
+  /**
+   * Background perticles.
+   */
+
+  for (var i = 0; i < 30; ++i) {
+    var elem = document.createElement('div');
+    elem.innerText = '★';
+    elem.className = 'particle';
+    var particle = new THREE.Particle(new THREE.ParticleDOMMaterial(elem));
+    
+    particle.position.z = 500 - Math.random() * 1000;
+    particle.position.y = 500 - Math.random() * 1000;
+    particle.position.x = 500 - Math.random() * 1000;
+    scene.add(particle);
+    
+    document.body.appendChild(elem);
+  }
+
+  /**
+   * Append renderer DOM element to document.
+   */
+
+  document.body.appendChild(renderer.domElement);
+  
+  /**
+   * Update camera position.
+   */
+
+  $(window).on('click', function(event) {
+    mouseX = (event.clientX - windowHalfX);
+    mouseY = (event.clientY - windowHalfY);
+  });
+  
+  /**
+   * Rendering.
+   */
+
+  (function() {
+    var time = +(new Date()) - now;
+		
+    camera.position.x += (mouseX - camera.position.x) * .05;
+    camera.position.y += (-(mouseY - 200) - camera.position.y) * .05;
+	
+    camera.lookAt(scene.position);
+    camera.rotation.z = Math.PI;
+	
+    A.update(time);
+    K.update(time);
+    N.update(time);
+		
+    renderer.render(scene, camera);
+    requestAnimationFrame(arguments.callee);
+  })();
+});
+</script>
+</body>
+</html>
