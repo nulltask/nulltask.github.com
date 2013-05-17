@@ -1,0 +1,161 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheets" href="http://cdnjs.cloudflare.com/ajax/libs/normalize/2.1.0/normalize.css">
+  <style>
+    body {
+      margin: 50px;
+      font-size: 85%;
+      font-family: "Helvetica Neue", Arial, Helvetica, sans-serif;
+    }
+    .form-container {
+      margin-top: 1em;
+    }
+    .form-container form {
+      margin: auto auto;
+    }
+  </style>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/moment.js/2.0.0/moment.min.js"></script>
+  <script src="http://code.jquery.com/jquery-2.0.0.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore.js"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone.js"></script>
+  <script src="http://code.highcharts.com/highcharts.js"></script>
+  <script src="http://code.highcharts.com/modules/exporting.js"></script>
+</head>
+<body>
+  <h1>Topsy API Example</h1>  
+  <div class="form-container">
+    <form name="controller">
+      <label>API Key:
+        <input name="api-key" value="SLOI5T6AAPUQSE4U54LAAAAAAD4GS4XOXVIQAAAAAAAFQGYA" size="60">
+      </label>
+      <label>Slice:
+        <select name="slice">
+          <option value="2592000">Monthly</option>
+          <option value="86400" selected>Daily</option>
+          <option value="1440">Hourly</option>
+        </select>
+      </label>
+      <label>Period:
+        <select name="period">
+          <option value="30">30</option>
+          <option value="60">60</option>
+          <option value="90">90</option>
+          <option value="120">120</option>
+          <option value="150">150</option>
+          <option value="180">180</option>
+        </select>
+      </label>
+    </form>
+    <p>
+      <ul>
+        <li><a href="http://manage.topsy.com/app/" taget="_blank">http://manage.topsy.com/app/</a></li>
+        <li><a href="http://about.topsy.com/products/api/overview/" taget="_blank">http://about.topsy.com/products/api/overview/</a></li>
+        <li><a href="http://api.highcharts.com/highcharts" taget="_blank">http://api.highcharts.com/highcharts</a></li>
+        <li><a href="http://ja.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC%E3%81%AE%E6%94%BF%E5%85%9A%E4%B8%80%E8%A6%A7#.E7.8F.BE.E5.9C.A8.E6.B4.BB.E5.8B.95.E3.81.97.E3.81.A6.E3.81.84.E3.82.8B.E6.94.BF.E5.85.9A" target="_blank">http://ja.wikipedia.org/wiki/日本の政党一覧</a></li>
+      </ul>
+  </div>
+  <div class="container"></div>
+  <div><a href="http://topsy.com" target="_blank"><img src="http://cdn.topsy.com/img/powered.png"></a></div>
+  <script>
+    
+    var url = 'http://otter.topsy.com/searchhistogram.json';
+    var apiKey = 'SLOI5T6AAPUQSE4U54LAAAAAAD4GS4XOXVIQAAAAAAAFQGYA';
+    
+    var parties = [
+      '自民党', '民主党', '日本維新の会', '公明党', 'みんなの党',
+      '生活の党', '日本共産党', '社会民主党', 'みどりの風', '新党改革',
+      '新党大地', '沖縄社会大衆党', '日本未来の党'
+    ];
+    
+    $(function() {
+      
+      function searchHistogram(options) {
+        return $.Deferred(function(deferred) {
+          options = _.defaults(options, { apikey: apiKey });
+          jQuery
+            .ajax(url, {
+              data: options,
+              dataType: 'jsonp'
+            })
+            .done(function(data) {
+              deferred.resolve({ data: data, options: options });
+            });
+        });
+      }
+      
+      function range(slice, period) {
+        var unit, format;
+        
+        switch (parseInt(slice, 10)) {
+          case 2592000:
+            unit = 'months';
+            format = 'MMM';
+            break;
+          case 86400:
+            unit = 'days';
+            format = 'MM/DD';
+            break;
+          case 1440:
+            unit = 'hours';
+            format = 'HH:mm'
+            break;
+        }
+        
+        return _.range(0, period).reverse().map(function(value) {
+          return moment().subtract(unit, value).format(format);
+        });
+      }
+      
+      $('[name=controller]').find('select').on('change', function(e) {
+        var slice = $('[name=slice]').val();
+        var period = $('[name=period]').val();
+        var defaults = { slice: slice, period: period, count_method: 'citiation' };        
+        apiKey = $('[name=api-key]').val();
+        
+        var searches = [];
+        
+        _.each(parties, function(party) {
+          searches.push(searchHistogram(_.defaults({ q: party }, defaults)));
+        });
+        
+        jQuery.when.apply(null, searches)
+          .done(function() {
+            // console.log(arguments);
+            
+            var series = _.map(arguments, function(result) {
+              console.log(result);
+              return { name: result.options.q, data: result.data.response.histogram };
+            });
+            
+            // console.log(series);
+            
+            $('.container').highcharts({
+              chart: { type: 'spline' },
+              title: { x: -20, text: 'Mentions of Japanese Famous Parties' },
+              subtitle: { x: -20, text: 'Source: topsy.com' },
+              xAxis: {
+                categories: range(slice, period)
+              },
+              yAxis: {
+                title: { text: 'Mentions' },
+                plotLines: [{ value: 0, width: 1, color: '#808080' }]
+              },
+              tooltip: { valueSuffix: '', crosshairs: true/*, shared: true*/ },
+              legend: {
+                layout: 'vertical',
+                align: 'left',
+                verticalAlign: 'top',
+                x: -10, y: 100,
+                borderWidth: 0
+              },
+              series: series
+            });
+          });
+      });
+      
+      $('select').first().trigger('change');
+    });
+  </script>
+</body>
+</html>
