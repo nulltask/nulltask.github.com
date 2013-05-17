@@ -1,6 +1,8 @@
 <!doctype html>
 <html>
 <head>
+  <meta charset="utf-8">
+  <title>Topsy API Example: Mentions of Japanese Major Political Parties</title>
   <link rel="stylesheets" href="http://cdnjs.cloudflare.com/ajax/libs/normalize/2.1.0/normalize.css">
   <style>
     body {
@@ -23,7 +25,7 @@
   <script src="http://code.highcharts.com/modules/exporting.js"></script>
 </head>
 <body>
-  <h1>Topsy API Example</h1>  
+  <h1>Topsy API Example: Mentions of Japanese Major Political Parties</h1>  
   <div class="form-container">
     <form name="controller">
       <label>API Key:
@@ -55,9 +57,9 @@
     </form>
     <p>
       <ul>
-        <li><a href="http://manage.topsy.com/app/" taget="_blank">http://manage.topsy.com/app/</a></li>
-        <li><a href="http://about.topsy.com/products/api/overview/" taget="_blank">http://about.topsy.com/products/api/overview/</a></li>
-        <li><a href="http://api.highcharts.com/highcharts" taget="_blank">http://api.highcharts.com/highcharts</a></li>
+        <li><a href="http://manage.topsy.com/app/" target="_blank">http://manage.topsy.com/app/</a></li>
+        <li><a href="http://about.topsy.com/products/api/overview/" target="_blank">http://about.topsy.com/products/api/overview/</a></li>
+        <li><a href="http://api.highcharts.com/highcharts" target="_blank">http://api.highcharts.com/highcharts</a></li>
         <li><a href="http://ja.wikipedia.org/wiki/%E6%97%A5%E6%9C%AC%E3%81%AE%E6%94%BF%E5%85%9A%E4%B8%80%E8%A6%A7#.E7.8F.BE.E5.9C.A8.E6.B4.BB.E5.8B.95.E3.81.97.E3.81.A6.E3.81.84.E3.82.8B.E6.94.BF.E5.85.9A" target="_blank">http://ja.wikipedia.org/wiki/日本の政党一覧</a></li>
       </ul>
   </div>
@@ -139,7 +141,7 @@
             
             $('.container').highcharts({
               chart: { type: 'spline' },
-              title: { x: -20, text: 'Mentions of Japanese Famous Parties' },
+              title: { x: -20, text: 'Mentions of Japanese Major Political Parties' },
               subtitle: { x: -20, text: 'Source: topsy.com' },
               xAxis: {
                 categories: range(slice, period)
