@@ -46,6 +46,12 @@
           <option value="180">180</option>
         </select>
       </label>
+      <label>Count Method:
+        <select name="count-method">
+          <option value="target">target</option>
+          <option value="citation" selected>citation</option>
+        </select>
+      </label>
     </form>
     <p>
       <ul>
@@ -110,7 +116,8 @@
       $('[name=controller]').find('select').on('change', function(e) {
         var slice = $('[name=slice]').val();
         var period = $('[name=period]').val();
-        var defaults = { slice: slice, period: period, count_method: 'citiation' };        
+        var countMethod = $('[name=count-method]').val();
+        var defaults = { slice: slice, period: period, count_method: countMethod };        
         apiKey = $('[name=api-key]').val();
         
         var searches = [];
@@ -141,7 +148,7 @@
                 title: { text: 'Mentions' },
                 plotLines: [{ value: 0, width: 1, color: '#808080' }]
               },
-              tooltip: { valueSuffix: '', crosshairs: true/*, shared: true*/ },
+              tooltip: { valueSuffix: '', crosshairs: true, shared: true },
               legend: {
                 layout: 'vertical',
                 align: 'left',
